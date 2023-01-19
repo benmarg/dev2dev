@@ -5,8 +5,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
 
-const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+const Home = () => {
 
   return (
     <>
@@ -16,7 +15,6 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="h-fit">
-      
         <div className="flex min-h-screen">
         <div className="absolute mt-16 w-full text-center text-2xl font-bold text-white">Dev2Dev is an easy to use platform that pairs developers who need help,<br /> with more experienced developers who have expertise specific to the problems <br /> they&apos;re trying to solve! To get started, choose one of the options below</div>
           <div className="w-[50%] flex flex-col gap-6 justify-center items-center bg-gradient-to-b from-[#7031c9] to-[#151fd5]">
@@ -46,27 +44,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined },
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
-  );
-};

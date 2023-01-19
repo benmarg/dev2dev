@@ -6,12 +6,13 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
+    provider     = "mysql"
     // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+    url          = "mysql://pkbiohjtb6wsgixab1xy:pscale_pw_lhUiNCitJQrtvvOR26pfj9m4xFnmuGQ0L3zJIl16Laa@us-west.connect.psdb.cloud/dev2dev?sslaccept=strict"
+    relationMode = "prisma"
 }
 
 // Necessary for Next auth
@@ -61,7 +62,7 @@ model VerificationToken {
 
 model Student {
     id         String   @id @default(cuid())
-    name       String
+    nickname   String
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     Question   Question @relation(fields: [questionID], references: [id], onDelete: Cascade)
@@ -70,7 +71,7 @@ model Student {
 
 model Mentor {
     id         String   @id @default(cuid())
-    name       String
+    nickname   String
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     javascript Int      @default(0)
@@ -83,6 +84,7 @@ model Mentor {
 model Question {
     id         String   @id @default(cuid())
     question   String
+    code       String
     skill      String
     difficulty Int
     createdAt  DateTime @default(now())
