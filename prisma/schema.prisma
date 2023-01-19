@@ -11,7 +11,7 @@ datasource db {
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url          = "mysql://pkbiohjtb6wsgixab1xy:pscale_pw_lhUiNCitJQrtvvOR26pfj9m4xFnmuGQ0L3zJIl16Laa@us-west.connect.psdb.cloud/dev2dev?sslaccept=strict"
+    url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
 
