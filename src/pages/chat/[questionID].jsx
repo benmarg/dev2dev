@@ -47,12 +47,13 @@ function ChatBox(){
     const privateChannel = pusher.subscribe(questionID);
 
     privateChannel.bind("chat-event", function (data) {
-      console.log("binding");
+      if(!data) return;
+      console.log("running bind");
       setChats((prevState) => [
         ...prevState,
         { sender: data.sender, message: data.message, timeSent: data.timeSent},
       ]);
-    });
+    }, privateChannel.unbind());
 
     const cleanup = () => {
       pusher.unsubscribe(questionID);
@@ -61,6 +62,7 @@ function ChatBox(){
     window.addEventListener('beforeunload', cleanup);
 
     return () => {
+      cleanup();
       window.removeEventListener('beforeunload', cleanup);
     };
 
@@ -74,9 +76,12 @@ function ChatBox(){
 
   return(
     <>
+      <div className="flex flex-col justify-center items-center">
+        <h1 className="text-2xl text-white font-bold text-center">Question: {question}</h1>
+      </div>
       <div className="max-h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
       {chats.map((chat) => (
-          chat.sender !== nickname ? 
+          chat.sender === nickname ? 
           <div key={chat.timeSent} className="w-fit break-words max-w-[75%] place-self-end">
           <div className="place-self-start text-left">
             <div className="bg-gray-100 p-5 rounded-2xl rounded-tl-none">
