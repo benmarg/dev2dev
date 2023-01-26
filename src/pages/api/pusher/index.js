@@ -13,6 +13,7 @@ export default async function handler(req, res) {
   await pusher.trigger(channel, "chat-event", {
     message,
     sender,
+    timeSent: new Date()
   });
 
   res.json({ message: "completed" });

@@ -47,9 +47,10 @@ function ChatBox(){
     const privateChannel = pusher.subscribe(questionID);
 
     privateChannel.bind("chat-event", function (data) {
+      console.log("binding");
       setChats((prevState) => [
         ...prevState,
-        { sender: data.sender, message: data.message },
+        { sender: data.sender, message: data.message, timeSent: data.timeSent},
       ]);
     });
 
@@ -74,10 +75,9 @@ function ChatBox(){
   return(
     <>
       <div className="max-h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
-      {chats.map((chat, id) => (
-        <>
-          {chat.sender !== nickname ? 
-          <div key={id} className="w-fit break-words max-w-[75%] place-self-end">
+      {chats.map((chat) => (
+          chat.sender !== nickname ? 
+          <div key={chat.timeSent} className="w-fit break-words max-w-[75%] place-self-end">
           <div className="place-self-start text-left">
             <div className="bg-gray-100 p-5 rounded-2xl rounded-tl-none">
                 {chat.message}
@@ -86,7 +86,7 @@ function ChatBox(){
          </div>
         </div>
         :
-        <div key={id} className="w-fit break-words max-w-[75%] place-self-start">
+        <div key={chat.timeSent}className="w-fit break-words max-w-[75%] place-self-start">
           <div className="place-self-end text-left">
               <div className="bg-green-50 text-green-900 p-5 rounded-2xl rounded-tr-none">
                   {chat.message}
@@ -94,8 +94,7 @@ function ChatBox(){
               <p className="text-sm text-gray-300 ">{chat.sender}</p>
           </div>
         </div>
-        }
-        </>
+        
       ))}
           <div ref={scrollToEnd}></div>
     </div>
