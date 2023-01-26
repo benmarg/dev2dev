@@ -23,7 +23,7 @@ export default function AskQuestion() {
 	const [nickname, setNickname] = useState<string>("");
 
 	const { setUser } = useUser();
-	const newStudentMutation = api.user.createStudent.useMutation()
+	const newStudentMutation = api.user.createStudent.useMutation();
 	const router = useRouter();
 
 	function getLanguage() {
@@ -49,7 +49,7 @@ export default function AskQuestion() {
 			nickname,
 			question: { question, skill: language, difficulty }
 		});
-		return router.push(`/chat/${questionID}`);
+		return router.push(`/chat/${questionID}?nickname=${nickname}`);
 	}
 
 	return (

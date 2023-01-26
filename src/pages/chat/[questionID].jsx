@@ -12,8 +12,7 @@ const Chat = () => {
         <h1 className="text-4xl text-white font-bold text-center">Chat</h1>
       </div>
       <ChatBox />   
-    </div>
-       
+    </div> 
     </>
   );
 };
@@ -21,14 +20,16 @@ const Chat = () => {
 function ChatBox(){
   const [chats, setChats] = useState([]);
   const [messageToSend, setMessageToSend] = useState("");
-  const { user: { nickname, question, code, language }}= useUser();
+  const { user: { question, code, language }}= useUser();
   const router = useRouter();
   const scrollToEnd = useRef(null);
   const [questionID, setQuestionID] = useState(null);
+  const [nickname, setNickname] = useState("Anonymous")
 
   useEffect(()=>{
     if(!router.isReady) return;
     setQuestionID(router.query.questionID);
+    setNickname(router.query.nickname)
 }, [router.isReady]);
 
   useEffect(() => {
@@ -36,6 +37,7 @@ function ChatBox(){
   }, [chats])
 
   useEffect(() => {
+    console.log("running");
     if(!questionID) return;
     
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
@@ -51,40 +53,49 @@ function ChatBox(){
       ]);
     });
 
-    return () => {
+    const cleanup = () => {
       pusher.unsubscribe(questionID);
+    }
+
+    window.addEventListener('beforeunload', cleanup);
+
+    return () => {
+      window.removeEventListener('beforeunload', cleanup);
     };
+
   }, [questionID]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    await axios.post("/api/pusher", { message: messageToSend, sender:nickname, channel: questionID });
+    axios.post("/api/pusher", { message: messageToSend, sender:nickname, channel: questionID });
+    setMessageToSend(""); 
   };
 
   return(
     <>
-      <div className="max-h-[50%] min-w-[30%] overflow-scroll mx-auto space-y-12 grid grid-cols-1">
+      <div className="max-h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
       {chats.map((chat, id) => (
         <>
-          <div key={id}>
           {chat.sender !== nickname ? 
+          <div key={id} className="w-fit break-words max-w-[75%] place-self-end">
           <div className="place-self-start text-left">
             <div className="bg-gray-100 p-5 rounded-2xl rounded-tl-none">
                 {chat.message}
             </div>
             <p className="text-sm text-gray-300 ">{chat.sender}</p>
-            
+         </div>
         </div>
         :
-        <div className="place-self-end text-right">
-            <div className="bg-green-50 text-green-900 p-5 rounded-2xl rounded-tr-none">
-                {chat.message}
-            </div>
-            <p className="text-sm text-gray-300 ">{chat.sender}</p>
+        <div key={id} className="w-fit break-words max-w-[75%] place-self-start">
+          <div className="place-self-end text-left">
+              <div className="bg-green-50 text-green-900 p-5 rounded-2xl rounded-tr-none">
+                  {chat.message}
+              </div>
+              <p className="text-sm text-gray-300 ">{chat.sender}</p>
+          </div>
         </div>
         }
-          </div>
-          </>
+        </>
       ))}
           <div ref={scrollToEnd}></div>
     </div>

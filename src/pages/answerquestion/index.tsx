@@ -42,7 +42,7 @@ export default function AskQuestion() {
 						code: question.skill
 					});
 					deleteQuestion.mutate({ id: question.id });
-					router.push(`/chat/${question.id}`);
+					router.push(`/chat/${question.id}?nickname=${nickname}`);
 				}
 				if (
 					question.skill === "typescript" &&
@@ -55,7 +55,7 @@ export default function AskQuestion() {
 						code: question.code
 					});
 					deleteQuestion.mutate({ id: question.id });
-					router.push(`/chat/${question.id}`);
+					router.push(`/chat/${question.id}?nickname=${nickname}`);
 				}
 				if (
 					question.skill === "react" &&
@@ -63,7 +63,7 @@ export default function AskQuestion() {
 				) {
 					setSearching(false);
 					deleteQuestion.mutate({ id: question.id });
-					router.push(`/chat/${question.id}`);
+					router.push(`/chat/${question.id}?nickname=${nickname}`);
 				}
 				if (
 					question.skill === "python" &&
@@ -71,7 +71,7 @@ export default function AskQuestion() {
 				) {
 					setSearching(false);
 					deleteQuestion.mutate({ id: question.id });
-					router.push(`/chat/${question.id}`);
+					router.push(`/chat/${question.id}?nickname=${nickname}`);
 				}
 				if (
 					question.skill === "java" &&
@@ -79,7 +79,7 @@ export default function AskQuestion() {
 				) {
 					setSearching(false);
 					deleteQuestion.mutate({ id: question.id });
-					router.push(`/chat/${question.id}`);
+					router.push(`/chat/${question.id}?nickname=${nickname}`);
 				}
 				if (
 					question.skill === "cpp" &&
@@ -87,7 +87,7 @@ export default function AskQuestion() {
 				) {
 					setSearching(false);
 					deleteQuestion.mutate({ id: question.id });
-					router.push(`/chat/${question.id}`);
+					router.push(`/chat/${question.id}?nickname=${nickname}`);
 				}
 			}
 		}
