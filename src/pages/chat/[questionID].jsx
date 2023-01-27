@@ -1,8 +1,19 @@
 import { useEffect, useState, useContext, useRef } from "react";
+import useSessionStorage from "./useSessionStorage";
 import Pusher from "pusher-js";
 import axios from "axios";
 import { useUser } from "../UserContext";
 import { useRouter } from "next/router";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
+import "prismjs/themes/prism.css";
 
 const Chat = () => {
   return (
@@ -20,7 +31,8 @@ const Chat = () => {
 function ChatBox(){
   const [chats, setChats] = useState([]);
   const [messageToSend, setMessageToSend] = useState("");
-  const { user: { question, code, language }}= useUser();
+  const { user } = useUser();
+  const { question, language, code } = user;
   const router = useRouter();
   const scrollToEnd = useRef(null);
   const [questionID, setQuestionID] = useState(null);
@@ -68,6 +80,22 @@ function ChatBox(){
 
   }, [questionID]);
 
+  function getLanguage() {
+    console.log(language);
+		switch (language) {
+			case "javascript":
+				return languages.js;
+			case "python":
+				return languages.python;
+			case "java":
+				return languages.java;
+			case "c++":
+				return languages.cpp;
+			case "typescript":
+				return languages.typescript;
+		}
+	}
+
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post("/api/pusher", { message: messageToSend, sender:nickname, channel: questionID });
@@ -78,8 +106,23 @@ function ChatBox(){
     <>
       <div className="flex flex-col justify-center items-center">
         <h1 className="text-2xl text-white font-bold text-center">Question: {question}</h1>
+        <h1 className="text-2xl text-white font-bold text-center">Language: {language}</h1>
+        {console.log("lang:", language)}
+        {/* <Editor
+						value={code}
+						highlight={(code) => highlight(code, getLanguage())}
+						ignoreTabKey={false}
+						padding={10}
+						style={{
+							fontFamily: '"Fira code", "Fira Mono", monospace',
+							fontSize: 14,
+							backgroundColor: "white",
+							height: "30rem"
+						}}
+            disabled={true}
+					/> */}
       </div>
-      <div className="max-h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
+      <div className="h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
       {chats.map((chat) => (
           chat.sender === nickname ? 
           <div key={chat.timeSent} className="w-fit break-words max-w-[75%] place-self-end">

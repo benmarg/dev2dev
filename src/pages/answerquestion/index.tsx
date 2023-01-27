@@ -38,7 +38,7 @@ export default function AskQuestion() {
 					setSearching(false);
 					setContextProps({
 						question: question.question,
-						language: question.question,
+						language: question.c,
 						code: question.skill
 					});
 					deleteQuestion.mutate({ id: question.id });
