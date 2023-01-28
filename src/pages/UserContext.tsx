@@ -31,7 +31,8 @@ const UserContextProvider: FC<UserContextProps> = ({ children }) => {
 		nickname: "Anonymous",
 		question: "",
 		language: "",
-		code: ""
+		code: "",
+        chat: []
 	});
 
 	return (

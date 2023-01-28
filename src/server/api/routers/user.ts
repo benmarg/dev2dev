@@ -10,7 +10,8 @@ export const userRouter = createTRPCRouter({
 				question: z.object({
 					question: z.string(),
 					skill: z.string(),
-					difficulty: z.number()
+					difficulty: z.number(),
+					code: z.string(),
 				})
 			})
 		)
@@ -18,7 +19,7 @@ export const userRouter = createTRPCRouter({
 			async ({
 				input: {
 					nickname,
-					question: { question, skill, difficulty }
+					question: { question, skill, difficulty, code }
 				},
 				ctx
 			}) => {
@@ -29,7 +30,8 @@ export const userRouter = createTRPCRouter({
 							create: {
 								question,
 								skill,
-								difficulty
+								code,
+								difficulty,
 							}
 						}
 					}
@@ -42,7 +44,7 @@ export const userRouter = createTRPCRouter({
 	fetchQuestions: publicProcedure.query(async ({ ctx }) => {
 		const questions = await ctx.prisma.question.findMany({
 			include: {
-				Student: true
+				Student: true,
 			}
 		});
 		return questions;

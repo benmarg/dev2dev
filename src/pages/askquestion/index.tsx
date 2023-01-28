@@ -47,7 +47,7 @@ export default function AskQuestion() {
 		setUser({ nickname, question, language, code });
 		const { questionID } = await newStudentMutation.mutateAsync({
 			nickname,
-			question: { question, skill: language, difficulty }
+			question: { question, skill: language, difficulty, code }
 		});
 		return router.push(`/chat/${questionID}?nickname=${nickname}`);
 	}

@@ -108,7 +108,7 @@ function ChatBox(){
         <h1 className="text-2xl text-white font-bold text-center">Question: {question}</h1>
         <h1 className="text-2xl text-white font-bold text-center">Language: {language}</h1>
         {console.log("lang:", language)}
-        {/* <Editor
+        <Editor
 						value={code}
 						highlight={(code) => highlight(code, getLanguage())}
 						ignoreTabKey={false}
@@ -120,7 +120,7 @@ function ChatBox(){
 							height: "30rem"
 						}}
             disabled={true}
-					/> */}
+					/>
       </div>
       <div className="h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
       {chats.map((chat) => (

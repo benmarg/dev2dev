@@ -36,10 +36,11 @@ export default function AskQuestion() {
 					question.difficulty <= javascriptDifficulty
 				) {
 					setSearching(false);
+					console.log(question);
 					setContextProps({
 						question: question.question,
-						language: question.c,
-						code: question.skill
+						language: question.skill,
+						code: question.code
 					});
 					deleteQuestion.mutate({ id: question.id });
 					router.push(`/chat/${question.id}?nickname=${nickname}`);
