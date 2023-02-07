@@ -44,7 +44,7 @@ export default function AskQuestion() {
 	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		console.log(question, code, language, difficulty);
-		setUser({ nickname, question, language, code });
+		setUser({ nickname, question, language, code, chats: [] });
 		const { questionID } = await newStudentMutation.mutateAsync({
 			nickname,
 			question: { question, skill: language, difficulty, code }

@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Add this to your CSS file */
+.animation-split {
+    animation: split 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes split {
+    from {
+      transform: skew(0deg);
+    }
+    to {
+      transform: skew(45deg);
+      
+    }
+  }
+  

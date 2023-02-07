@@ -16,72 +16,85 @@ import "prismjs/components/prism-cpp";
 import "prismjs/themes/prism.css";
 
 const Chat = () => {
-  return (
-    <>
-    <div className="h-screen flex flex-col justify-between bg-gradient-to-b from-[#7031c9] to-[#151fd5]">
-      <div>
-        <h1 className="text-4xl text-white font-bold text-center">Chat</h1>
-      </div>
-      <ChatBox />   
-    </div> 
-    </>
-  );
+	return (
+		<>
+			<div className="flex h-fit flex-col justify-between bg-gradient-to-b from-[#7031c9] to-[#151fd5]">
+				<div>
+					<h1 className="text-center text-4xl font-bold text-white">
+						Chat
+					</h1>
+				</div>
+				<ChatBox />
+			</div>
+		</>
+	);
 };
 
-function ChatBox(){
-  const [chats, setChats] = useState([]);
-  const [messageToSend, setMessageToSend] = useState("");
-  const { user } = useUser();
-  const { question, language, code } = user;
-  const router = useRouter();
-  const scrollToEnd = useRef(null);
-  const [questionID, setQuestionID] = useState(null);
-  const [nickname, setNickname] = useState("Anonymous")
+function ChatBox() {
+	const [messageToSend, setMessageToSend] = useState("");
+	const { user, setUser } = useUser();
+	const { question, language, code, chats } = user;
+	const router = useRouter();
+	const scrollToEnd = useRef(null);
+	const [questionID, setQuestionID] = useState(null);
+	const [nickname, setNickname] = useState("Anonymous");
 
-  useEffect(()=>{
-    if(!router.isReady) return;
-    setQuestionID(router.query.questionID);
-    setNickname(router.query.nickname)
-}, [router.isReady]);
+	console.log("user: ", user);
+	useEffect(() => {
+		if (!router.isReady) return;
+		setQuestionID(router.query.questionID);
+		setNickname(router.query.nickname);
+	}, [router.isReady]);
 
-  useEffect(() => {
-    scrollToEnd.current?.scrollIntoView({ behavior: 'smooth', block: "end" , inline: "nearest"})
-  }, [chats])
+	useEffect(() => {
+		scrollToEnd.current?.scrollIntoView({
+			behavior: "smooth",
+			block: "end",
+			inline: "nearest"
+		});
+	}, [chats]);
 
-  useEffect(() => {
-    console.log("running");
-    if(!questionID) return;
-    
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-      cluster: "us3",
-    });
+	useEffect(() => {
+		console.log("running");
+		if (!questionID) return;
 
-    const privateChannel = pusher.subscribe(questionID);
+		const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
+			cluster: "us3"
+		});
 
-    privateChannel.bind("chat-event", function (data) {
-      if(!data) return;
-      console.log("running bind");
-      setChats((prevState) => [
-        ...prevState,
-        { sender: data.sender, message: data.message, timeSent: data.timeSent},
-      ]);
-    }, privateChannel.unbind());
+		const privateChannel = pusher.subscribe(questionID);
 
-    const cleanup = () => {
-      pusher.unsubscribe(questionID);
-    }
+		privateChannel.bind("chat-event", function (data) {
+			if (!data) return;
+			console.log("running bind");
 
-    window.addEventListener('beforeunload', cleanup);
+			setUser((prevUser) => ({
+				...prevUser,
+				chats: [
+					...prevUser.chats,
+					{
+						sender: data.sender,
+						message: data.message,
+						timeSent: data.timeSent
+					}
+				]
+			}));
+		});
 
-    return () => {
-      cleanup();
-      window.removeEventListener('beforeunload', cleanup);
-    };
+		const cleanup = () => {
+			pusher.unsubscribe(questionID);
+		};
 
-  }, [questionID]);
+		window.addEventListener("beforeunload", cleanup);
 
-  function getLanguage() {
-    console.log(language);
+		return () => {
+			cleanup();
+			window.removeEventListener("beforeunload", cleanup);
+		};
+	}, [questionID, setUser]);
+
+	function getLanguage() {
+		if (!language) return languages.js;
 		switch (language) {
 			case "javascript":
 				return languages.js;
@@ -96,72 +109,93 @@ function ChatBox(){
 		}
 	}
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post("/api/pusher", { message: messageToSend, sender:nickname, channel: questionID });
-    setMessageToSend(""); 
-  };
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		axios.post("/api/pusher", {
+			message: messageToSend,
+			sender: nickname,
+			channel: questionID
+		});
+		setMessageToSend("");
+	};
 
-  return(
-    <>
-      <div className="flex flex-col justify-center items-center">
-        <h1 className="text-2xl text-white font-bold text-center">Question: {question}</h1>
-        <h1 className="text-2xl text-white font-bold text-center">Language: {language}</h1>
-        {console.log("lang:", language)}
-        <Editor
-						value={code}
-						highlight={(code) => highlight(code, getLanguage())}
-						ignoreTabKey={false}
-						padding={10}
-						style={{
-							fontFamily: '"Fira code", "Fira Mono", monospace',
-							fontSize: 14,
-							backgroundColor: "white",
-							height: "30rem"
+	return (
+		<>
+			<div className="flex flex-col items-center justify-center gap-4">
+				<h1 className="text-center text-2xl font-bold text-white">
+					Question: {question}
+				</h1>
+				<h1 className="mb-4 text-center text-2xl font-bold text-white">
+					Language: {language}
+				</h1>
+				{console.log("lang:", language)}
+				<Editor
+					value={code}
+					highlight={(code) => highlight(code, getLanguage())}
+					ignoreTabKey={false}
+					padding={10}
+					style={{
+						fontFamily: '"Fira code", "Fira Mono", monospace',
+						fontSize: 14,
+						backgroundColor: "white",
+						height: "30rem"
+					}}
+					className="max-h-[60%] w-[60%] overflow-scroll"
+					disabled={true}
+				/>
+				<div>
+					<div className="flex h-[36rem] w-[60%] flex-col space-y-8 overflow-scroll bg-white">
+						{chats.map((chat) =>
+							chat.sender !== nickname ? (
+								<div
+									key={chat.timeSent}
+									className="w-fit max-w-[75%] place-self-start break-words px-4"
+								>
+									<div className="place-self-end text-left">
+										<div className="rounded-2xl rounded-tl-none bg-gray-100 p-5">
+											{chat.message}
+										</div>
+										<p className="text-sm text-gray-300 ">
+											{chat.sender}
+										</p>
+									</div>
+								</div>
+							) : (
+								<div
+									key={chat.timeSent}
+									className="w-fit max-w-[75%] place-self-end break-words px-4"
+								>
+									<div className="place-self-start text-left">
+										<div className="rounded-2xl rounded-tr-none bg-green-50 p-5 text-green-900">
+											{chat.message}
+										</div>
+										<p className="text-sm text-gray-300 ">
+											{chat.sender}
+										</p>
+									</div>
+								</div>
+							)
+						)}
+						<div ref={scrollToEnd}></div>
+					</div>
+					<form
+						onSubmit={(e) => {
+							handleSubmit(e);
 						}}
-            disabled={true}
-					/>
-      </div>
-      <div className="h-[50%] min-w-[30%] max-w-[50%] overflow-scroll space-y-8 flex flex-col">
-      {chats.map((chat) => (
-          chat.sender === nickname ? 
-          <div key={chat.timeSent} className="w-fit break-words max-w-[75%] place-self-end">
-          <div className="place-self-start text-left">
-            <div className="bg-gray-100 p-5 rounded-2xl rounded-tl-none">
-                {chat.message}
-            </div>
-            <p className="text-sm text-gray-300 ">{chat.sender}</p>
-         </div>
-        </div>
-        :
-        <div key={chat.timeSent}className="w-fit break-words max-w-[75%] place-self-start">
-          <div className="place-self-end text-left">
-              <div className="bg-green-50 text-green-900 p-5 rounded-2xl rounded-tr-none">
-                  {chat.message}
-              </div>
-              <p className="text-sm text-gray-300 ">{chat.sender}</p>
-          </div>
-        </div>
-        
-      ))}
-          <div ref={scrollToEnd}></div>
-    </div>
-
-        <form onSubmit={(e) => {handleSubmit(e)}}>
-        <input
-          type="text"
-        value={messageToSend}
-          onChange={(e) => setMessageToSend(e.target.value)}
-            placeholder="start typing...."
-        />
-  <button
-  type="submit"
-  >
-  Send
-  </button>
-  </form>
-</>
-  )
+            className="flex items-center content-center"
+					>
+						<input
+							type="text"
+							value={messageToSend}
+							onChange={(e) => setMessageToSend(e.target.value)}
+							placeholder="start typing...."
+						/>
+						<button type="submit">Send</button>
+					</form>
+				</div>
+			</div>
+		</>
+	);
 }
 
 export default Chat;

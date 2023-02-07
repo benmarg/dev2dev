@@ -7,6 +7,7 @@ type User = {
 	question: string;
 	language: string;
 	code: string;
+	chats: string[];
 };
 
 type UserContextType = {
@@ -27,12 +28,12 @@ interface UserContextProps {
 }
 
 const UserContextProvider: FC<UserContextProps> = ({ children }) => {
-	const [user, setUser] = useSessionStorage("user", {
+	const [user, setUser] = useSessionStorage<User>("user", {
 		nickname: "Anonymous",
 		question: "",
 		language: "",
 		code: "",
-        chat: []
+		chats: []
 	});
 
 	return (
