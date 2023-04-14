@@ -1,5 +1,5 @@
 import { type FC, useState, type FormEvent, useRef } from "react";
-import Skill from "./skill";
+import Skill from "./Skill";
 import { api } from "../../utils/api";
 import { useRouter } from "next/router";
 import { useUser } from "../UserContext";
