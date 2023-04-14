@@ -32,6 +32,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -40,6 +41,8 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
@@ -67,6 +70,8 @@ model Student {
     updatedAt  DateTime @updatedAt
     Question   Question @relation(fields: [questionID], references: [id], onDelete: Cascade)
     questionID String   @unique
+
+    @@index([questionID])
 }
 
 model Mentor {
@@ -83,8 +88,8 @@ model Mentor {
 
 model Question {
     id         String   @id @default(cuid())
-    question   String
-    code       String
+    question   String   @db.Text
+    code       String   @db.Text
     skill      String
     difficulty Int
     createdAt  DateTime @default(now())

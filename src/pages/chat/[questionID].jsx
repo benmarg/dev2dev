@@ -20,7 +20,7 @@ const Chat = () => {
 		<>
 			<div className="flex h-fit flex-col justify-between bg-gradient-to-b from-[#7031c9] to-[#151fd5]">
 				<div>
-					<h1 className="text-center text-4xl font-bold text-white">
+					<h1 className="text-center text-4xl font-bold text-white my-2">
 						Chat
 					</h1>
 				</div>
@@ -49,7 +49,7 @@ function ChatBox() {
 	useEffect(() => {
 		scrollToEnd.current?.scrollIntoView({
 			behavior: "smooth",
-			block: "end",
+			block: "nearest",
 			inline: "nearest"
 		});
 	}, [chats]);
@@ -83,6 +83,13 @@ function ChatBox() {
 
 		const cleanup = () => {
 			pusher.unsubscribe(questionID);
+			setUser({
+		nickname: "Anonymous",
+		question: "",
+		language: "",
+		code: "",
+		chats: []
+	})
 		};
 
 		window.addEventListener("beforeunload", cleanup);
@@ -126,9 +133,8 @@ function ChatBox() {
 					Question: {question}
 				</h1>
 				<h1 className="mb-4 text-center text-2xl font-bold text-white">
-					Language: {language}
+					Language: {language.charAt(0).toUpperCase() + language.slice(1)}
 				</h1>
-				{console.log("lang:", language)}
 				<Editor
 					value={code}
 					highlight={(code) => highlight(code, getLanguage())}
@@ -143,8 +149,8 @@ function ChatBox() {
 					className="max-h-[60%] w-[60%] overflow-scroll"
 					disabled={true}
 				/>
-				<div>
-					<div className="flex h-[36rem] w-[60%] flex-col space-y-8 overflow-scroll bg-white">
+				<div className="flex flex-col items-center w-[60%] pb-5">
+					<div className="flex h-[36rem] w-full flex-col space-y-8 overflow-scroll bg-white">
 						{chats.map((chat) =>
 							chat.sender !== nickname ? (
 								<div
@@ -182,16 +188,25 @@ function ChatBox() {
 						onSubmit={(e) => {
 							handleSubmit(e);
 						}}
-            className="flex items-center content-center"
+            className="flex w-full justify-end"
 					>
 						<input
 							type="text"
 							value={messageToSend}
 							onChange={(e) => setMessageToSend(e.target.value)}
-							placeholder="start typing...."
+							placeholder="Start Typing...."
+							className="bg-gray-100 w-full pl-1 focus-visible:outline-0"
 						/>
-						<button type="submit">Send</button>
+						<button type="submit"
+						className="bg-gray-100 p-1">Send</button>
 					</form>
+					<button
+							type="button"
+							className="rounded-md bg-red-500 py-2.5 px-3.5 mt-4 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+							onClick={() => router.push("/")}
+						>
+							End Session
+						</button>	
 				</div>
 			</div>
 		</>
